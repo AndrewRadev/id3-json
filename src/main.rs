@@ -3,7 +3,15 @@ mod json;
 
 fn main() -> anyhow::Result<()> {
     let args = input::parse_args()?;
-    let mut tag = id3::Tag::read_from_path(&args.filename)?;
+
+    let mut tag = match id3::Tag::read_from_path(&args.filename) {
+        Ok(t) => t,
+        Err(id3::Error { kind: id3::ErrorKind::NoTag, .. }) => {
+            println!("{{}}");
+            return Ok(());
+        },
+        Err(e) => return Err(e.into()),
+    };
 
     if args.write {
         let input = serde_json::from_reader(std::io::stdin())?;
