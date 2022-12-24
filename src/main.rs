@@ -1,7 +1,7 @@
-mod input;
-mod json;
-
 use std::process::ExitCode;
+
+use id3_json::input;
+use id3_json::json;
 
 fn main() -> ExitCode {
     match run() {
@@ -42,5 +42,6 @@ fn run() -> anyhow::Result<()> {
 
 fn print_json_error(e: anyhow::Error) {
     let error_json = serde_json::json!({ "error": format!("{}", e) });
+    // Unwrap: If writing to stdout fails, we might as well panic at this point
     serde_json::to_writer(std::io::stdout(), &error_json).unwrap();
 }
