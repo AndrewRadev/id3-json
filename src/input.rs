@@ -34,8 +34,10 @@ pub fn parse_args() -> Result<Args, lexopt::Error> {
                 println!("FLAGS:");
                 println!("    -r, --read       Reads tags and outputs them as JSON.");
                 println!("                     If neither `read` nor `write` are given, will read by default.");
+                println!("");
                 println!("    -w, --write      Write mode, will expect a JSON with valid tag values.");
                 println!("                     If also given `read`, will print the resulting tags afterwards");
+                println!("");
                 println!("    -V, --version    Prints version information");
                 println!("");
                 println!("ARGS:");
