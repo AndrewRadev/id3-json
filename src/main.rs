@@ -19,7 +19,7 @@ fn run() -> anyhow::Result<()> {
     let mut tag = match id3::Tag::read_from_path(&args.filename) {
         Ok(t) => t,
         Err(id3::Error { kind: id3::ErrorKind::NoTag, .. }) => {
-            println!("{{}}");
+            println!("{{\"data\":{{}}}}");
             return Ok(());
         },
         Err(e) => return Err(e.into()),
