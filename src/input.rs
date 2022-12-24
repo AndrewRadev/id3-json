@@ -35,7 +35,7 @@ where
                 println!("id3-json {}", env!("CARGO_PKG_VERSION"));
                 println!("");
                 println!("USAGE:");
-                println!("    id3-image-json [FLAGS] <music-file.mp3>");
+                println!("    id3-json [FLAGS] <music-file.mp3>");
                 println!("");
                 println!("FLAGS:");
                 println!("    -r, --read       Reads tags from the file and outputs them to STDOUT as JSON.");

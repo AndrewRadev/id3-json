@@ -1,3 +1,5 @@
+[![Build Status](https://circleci.com/gh/AndrewRadev/id3-json/tree/main.svg?style=shield)](https://circleci.com/gh/AndrewRadev/id3-json?branch=main)
+
 # ID3-JSON
 
 This project's goal is to provide an easy way to read and write ID3 tags with a consistent input and output. The existing tools I've found require a lot of work to parse their output and work in inconsistent ways, so I'm making another one.
@@ -14,7 +16,7 @@ Running the program with `--help` should provide a message along these lines.
 id3-json 0.1.0
 
 USAGE:
-    id3-image-json [FLAGS] <music-file.mp3>
+    id3-json [FLAGS] <music-file.mp3>
 
 FLAGS:
     -r, --read       Reads tags from the file and outputs them to STDOUT as JSON.
