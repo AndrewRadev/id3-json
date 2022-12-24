@@ -3,7 +3,7 @@ use std::ffi::OsString;
 
 use lexopt::prelude::*;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Args {
     pub filename: PathBuf,
     pub read: bool,
