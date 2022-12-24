@@ -1,14 +1,23 @@
 [package]
-name = "id3-json"
-version = "0.1.0"
-edition = "2021"
+name          = "id3-json"
+version       = "0.1.0"
+edition       = "2021"
+authors       = ["Andrew Radev <andrew.radev@proton.me>"]
+license       = "MIT"
+description   = "Read and write ID3 tags in a machine-readable way"
+readme        = "README.md"
+repository    = "https://github.com/AndrewRadev/id3-image"
+documentation = "https://docs.rs/id3-image/latest/id3_image"
+keywords      = [ "id3", "mp3", "json" ]
+categories    = [ "command-line-utilities", "filesystem" ]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[badges]
+circle-ci = { repository = "AndrewRadev/id3-json" }
 
 [dependencies]
-anyhow = "1.0.68"
-id3 = "1.5.1"
-lexopt = "0.2.1"
+anyhow     = "1.0.68"
+id3        = "1.5.1"
+lexopt     = "0.2.1"
 serde_json = "1.0.91"
 
 [dev-dependencies]

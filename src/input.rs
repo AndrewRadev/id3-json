@@ -27,7 +27,7 @@ where
             Value(val) if filename_input.is_none() => {
                 filename_input = Some(PathBuf::from(val));
             }
-            Long("version") => {
+            Short('V') | Long("version") => {
                 println!("id3-json {}", env!("CARGO_PKG_VERSION"));
                 std::process::exit(0);
             }
@@ -38,10 +38,10 @@ where
                 println!("    id3-image-json [FLAGS] <music-file.mp3>");
                 println!("");
                 println!("FLAGS:");
-                println!("    -r, --read       Reads tags and outputs them as JSON.");
+                println!("    -r, --read       Reads tags from the file and outputs them to STDOUT as JSON.");
                 println!("                     If neither `read` nor `write` are given, will read by default.");
                 println!("");
-                println!("    -w, --write      Write mode, will expect a JSON with valid tag values.");
+                println!("    -w, --write      Write mode, expects a JSON on STDIN with valid tag values.");
                 println!("                     If also given `read`, will print the resulting tags afterwards");
                 println!("");
                 println!("    -V, --version    Prints version information");
