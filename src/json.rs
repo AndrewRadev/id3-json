@@ -13,6 +13,7 @@ pub fn read_from_tag(tag: &id3::Tag) -> serde_json::Value {
             "artist": tag.artist(),
             "album": tag.album(),
             "track": tag.track(),
+            "year": tag.year(),
             "genre": tag.genre(),
             "comment": comment,
         },
@@ -51,6 +52,13 @@ pub fn write_to_tag(
                     tag.set_track(track);
                 } else {
                     tag.remove_track();
+                }
+            },
+            "year" => {
+                if let Some(year) = extract_u32("year", &value)? {
+                    tag.set_year(year.try_into()?);
+                } else {
+                    tag.remove_year();
                 }
             },
             "genre" => {

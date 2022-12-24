@@ -45,6 +45,7 @@ fn test_full_write_to_tag() {
         "artist": "ID3-JSON",
         "album": "Songs of data processing",
         "track": 1337,
+        "year": 2022,
         "genre": "Electronic",
         "comment": "No comment",
     }).as_object().unwrap().clone();
@@ -56,6 +57,7 @@ fn test_full_write_to_tag() {
     assert_eq!(json.get("data").unwrap().get("artist").unwrap(), "ID3-JSON");
     assert_eq!(json.get("data").unwrap().get("album").unwrap(), "Songs of data processing");
     assert_eq!(json.get("data").unwrap().get("track").unwrap(), 1337);
+    assert_eq!(json.get("data").unwrap().get("year").unwrap(), 2022);
     assert_eq!(json.get("data").unwrap().get("genre").unwrap(), "Electronic");
     assert_eq!(json.get("data").unwrap().get("comment").unwrap(), "No comment");
 }
