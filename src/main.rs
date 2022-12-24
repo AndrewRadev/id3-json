@@ -1,8 +1,20 @@
 mod input;
 mod json;
 
-fn main() -> anyhow::Result<()> {
-    let args = input::parse_args()?;
+use std::process::ExitCode;
+
+fn main() -> ExitCode {
+    match run() {
+        Ok(()) => ExitCode::SUCCESS,
+        Err(e) => {
+            print_json_error(e);
+            ExitCode::FAILURE
+        },
+    }
+}
+
+fn run() -> anyhow::Result<()> {
+    let args = input::parse_args(std::env::args_os())?;
 
     let mut tag = match id3::Tag::read_from_path(&args.filename) {
         Ok(t) => t,
@@ -26,4 +38,9 @@ fn main() -> anyhow::Result<()> {
     }
 
     Ok(())
+}
+
+fn print_json_error(e: anyhow::Error) {
+    let error_json = serde_json::json!({ "error": format!("{}", e) });
+    serde_json::to_writer(std::io::stdout(), &error_json).unwrap();
 }

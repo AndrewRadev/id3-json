@@ -1,4 +1,6 @@
 use std::path::PathBuf;
+use std::ffi::OsString;
+
 use lexopt::prelude::*;
 
 #[derive(Debug)]
@@ -8,11 +10,15 @@ pub struct Args {
     pub write: bool,
 }
 
-pub fn parse_args() -> Result<Args, lexopt::Error> {
+pub fn parse_args<I>(args: I) -> Result<Args, lexopt::Error>
+where
+    I: IntoIterator + 'static,
+    I::Item: Into<OsString>,
+{
     let mut filename_input = None;
     let mut read = false;
     let mut write = false;
-    let mut parser = lexopt::Parser::from_env();
+    let mut parser = lexopt::Parser::from_iter(args);
 
     while let Some(arg) = parser.next()? {
         match arg {

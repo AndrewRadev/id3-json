@@ -8,12 +8,14 @@ pub fn read_from_tag(tag: &id3::Tag) -> serde_json::Value {
     let comment = tag.comments().find(|c| c.description == "").map(|c| c.text.clone());
 
     serde_json::json!({
-        "title": tag.title(),
-        "artist": tag.artist(),
-        "album": tag.album(),
-        "track": tag.track(),
-        "genre": tag.genre(),
-        "comment": comment,
+        "data": {
+            "title": tag.title(),
+            "artist": tag.artist(),
+            "album": tag.album(),
+            "track": tag.track(),
+            "genre": tag.genre(),
+            "comment": comment,
+        },
     })
 }
 
@@ -74,7 +76,8 @@ pub fn write_to_tag(
                         let mut new_comment = existing_comment.clone();
                         new_comment.text = text;
 
-                        comment_frames[index] = id3::Frame::with_content("COMM", id3::Content::Comment(new_comment));
+                        let new_frame = id3::Frame::with_content("COMM", id3::Content::Comment(new_comment));
+                        comment_frames[index] = new_frame;
                     },
                     (None, Some(text)) => {
                         let new_comment = id3::frame::Comment {
@@ -82,8 +85,9 @@ pub fn write_to_tag(
                             description: String::new(),
                             text,
                         };
+                        let new_frame = id3::Frame::with_content("COMM", id3::Content::Comment(new_comment));
 
-                        comment_frames.push(id3::Frame::with_content("COMM", id3::Content::Comment(new_comment)));
+                        comment_frames.push(new_frame);
                     }
                     (None, None) => return Ok(()),
                 }
