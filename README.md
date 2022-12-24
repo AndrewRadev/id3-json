@@ -13,7 +13,7 @@ The project is backed by the excellent [id3](https://crates.io/crates/id3) crate
 Running the program with `--help` should provide a message along these lines.
 
 ```
-id3-json 0.1.0
+id3-json 0.1.1
 
 USAGE:
     id3-json [FLAGS] <music-file.mp3>
