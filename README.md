@@ -1,4 +1,4 @@
-[![Build Status](https://circleci.com/gh/AndrewRadev/id3-json/tree/main.svg?style=shield)](https://circleci.com/gh/AndrewRadev/id3-json?branch=main)
+[![Build Status](https://circleci.com/gh/AndrewRadev/rust-id3-json/tree/main.svg?style=shield)](https://circleci.com/gh/AndrewRadev/rust-id3-json?branch=main)
 
 # ID3-JSON
 
