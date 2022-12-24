@@ -8,6 +8,20 @@ The main client of this project is going to be a Vim plugin: <https://github.com
 
 The project is backed by the excellent [id3](https://crates.io/crates/id3) crate built in Rust. Really, the tag parsing and writing logic is all there -- the code here mostly just translates the data to/from JSON (though I do make some assumptions, see [Quirks](#quirks) below).
 
+## Installation
+
+If you have the Rust toolchain installed, you can install it from crates.io:
+
+```
+$ cargo install id3-json
+```
+
+But you can also use the precompiled binary for your operating system from the releases tab in github: <https://github.com/AndrewRadev/rust-id3-json/releases>:
+
+- Linux: [binary](https://github.com/AndrewRadev/rust-id3-json/releases/download/v0.1.1/rust-id3-json_v0.1.1_x86_64-unknown-linux-musl.zip), [sha256 checksum](https://github.com/AndrewRadev/rust-id3-json/releases/download/v0.1.1/rust-id3-json_v0.1.1_x86_64-unknown-linux-musl.zip.sha256sum)
+- Windows: [binary](https://github.com/AndrewRadev/rust-id3-json/releases/download/v0.1.1/rust-id3-json_v0.1.1_x86_64-pc-windows-gnu.zip), [sha256 checksum](https://github.com/AndrewRadev/rust-id3-json/releases/download/v0.1.1/rust-id3-json_v0.1.1_x86_64-pc-windows-gnu.zip.sha256sum)
+- Mac: [binary](https://github.com/AndrewRadev/rust-id3-json/releases/download/v0.1.1/rust-id3-json_v0.1.1_x86_64-apple-darwin.zip), [sha256 checksum](https://github.com/AndrewRadev/rust-id3-json/releases/download/v0.1.1/rust-id3-json_v0.1.1_x86_64-apple-darwin.zip.sha256sum)
+
 ## Basic usage
 
 Running the program with `--help` should provide a message along these lines.
