@@ -3,7 +3,7 @@ use std::ffi::OsString;
 
 use lexopt::prelude::*;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct Args {
     pub filename: PathBuf,
     pub read: bool,
@@ -33,19 +33,19 @@ where
             }
             Long("help") => {
                 println!("id3-json {}", env!("CARGO_PKG_VERSION"));
-                println!("");
+                println!();
                 println!("USAGE:");
                 println!("    id3-json [FLAGS] <music-file.mp3>");
-                println!("");
+                println!();
                 println!("FLAGS:");
                 println!("    -r, --read       Reads tags from the file and outputs them to STDOUT as JSON.");
                 println!("                     If neither `read` nor `write` are given, will read by default.");
-                println!("");
+                println!();
                 println!("    -w, --write      Write mode, expects a JSON on STDIN with valid tag values.");
                 println!("                     If also given `read`, will print the resulting tags afterwards");
-                println!("");
+                println!();
                 println!("    -V, --version    Prints version information");
-                println!("");
+                println!();
                 println!("ARGS:");
                 println!("    <music-file.mp3>    Music file to read tags from or write tags to");
                 std::process::exit(0);

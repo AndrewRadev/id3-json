@@ -5,7 +5,7 @@ pub fn read_from_tag(tag: &id3::Tag) -> serde_json::Value {
     // There could be many comments, but in my music library, it seems like it's common to just
     // have one with a "description" set to an empty string. So let's have a single "comment" field
     // that reads and writes there.
-    let comment = tag.comments().find(|c| c.description == "").map(|c| c.text.clone());
+    let comment = tag.comments().find(|c| c.description.is_empty()).map(|c| c.text.clone());
 
     serde_json::json!({
         "data": {
@@ -71,7 +71,7 @@ pub fn write_to_tag(
             "comment" => {
                 let mut comment_frames = tag.remove("COMM");
                 let existing_index = comment_frames.iter().
-                    position(|c| c.content().comment().unwrap().description == "");
+                    position(|c| c.content().comment().unwrap().description.is_empty());
                 let new_comment_body = extract_string("comment", &value)?;
 
                 match (existing_index, new_comment_body) {
