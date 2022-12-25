@@ -111,7 +111,7 @@ pub fn write_to_tag(
 }
 
 
-pub fn extract_string(label: &str, json_value: &serde_json::Value) -> anyhow::Result<Option<String>> {
+fn extract_string(label: &str, json_value: &serde_json::Value) -> anyhow::Result<Option<String>> {
     match json_value {
         serde_json::Value::Null          => Ok(None),
         serde_json::Value::String(value) => Ok(Some(value.clone())),
@@ -119,7 +119,7 @@ pub fn extract_string(label: &str, json_value: &serde_json::Value) -> anyhow::Re
     }
 }
 
-pub fn extract_u32(label: &str, json_value: &serde_json::Value) -> anyhow::Result<Option<u32>> {
+fn extract_u32(label: &str, json_value: &serde_json::Value) -> anyhow::Result<Option<u32>> {
     let invalid_number = anyhow!("Invalid numeric value for \"{}\": {:?}", label, json_value);
 
     match json_value {
@@ -129,5 +129,51 @@ pub fn extract_u32(label: &str, json_value: &serde_json::Value) -> anyhow::Resul
             Ok(Some(value))
         },
         _ => Err(anyhow!("Invalid numeric value for \"{}\": {:?}", label, json_value)),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_extract_string() {
+        let json = serde_json::json!("String!");
+        let value = extract_string("_", &json).unwrap();
+        assert_eq!(value, Some(String::from("String!")));
+
+        let json = serde_json::json!({ "key": "String!" });
+        let value = extract_string("key", &json.get("key").unwrap()).unwrap();
+        assert_eq!(value, Some(String::from("String!")));
+
+        let json = serde_json::json!({ "key": None::<String> });
+        let value = extract_string("key", &json.get("key").unwrap()).unwrap();
+        assert_eq!(value, None);
+
+        let json = serde_json::json!({ "key": 13 });
+        assert!(extract_string("key", &json.get("key").unwrap()).is_err());
+
+        let json = serde_json::json!({ "key": ["String!"] });
+        assert!(extract_string("key", &json.get("key").unwrap()).is_err());
+    }
+
+    #[test]
+    fn test_extract_u32() {
+        let json = serde_json::json!(42);
+        let value = extract_u32("_", &json).unwrap();
+        assert_eq!(value, Some(42));
+
+        let json = serde_json::json!(None::<u64>);
+        let value = extract_u32("_", &json).unwrap();
+        assert_eq!(value, None);
+
+        let json = serde_json::json!({ "key": "String!" });
+        assert!(extract_u32("key", &json.get("key").unwrap()).is_err());
+
+        let json = serde_json::json!({ "key": ["String!"] });
+        assert!(extract_u32("key", &json.get("key").unwrap()).is_err());
+
+        let json = serde_json::json!({ "key": u64::MAX });
+        assert!(extract_u32("key", &json.get("key").unwrap()).is_err());
     }
 }

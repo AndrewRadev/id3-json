@@ -65,5 +65,3 @@ where
 
     Ok(Args { filename, read, write })
 }
-
-
