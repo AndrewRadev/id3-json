@@ -1,4 +1,4 @@
-[![Build Status](https://circleci.com/gh/AndrewRadev/rust-id3-json/tree/main.svg?style=shield)](https://circleci.com/gh/AndrewRadev/rust-id3-json?branch=main)
+[![Build Status](https://circleci.com/gh/AndrewRadev/id3-json/tree/main.svg?style=shield)](https://circleci.com/gh/AndrewRadev/id3-json?branch=main)
 
 # ID3-JSON
 
@@ -16,7 +16,7 @@ If you have the Rust toolchain installed, you can install it from crates.io:
 $ cargo install id3-json
 ```
 
-But you can also use the precompiled binary for your operating system from the releases tab in github: <https://github.com/AndrewRadev/rust-id3-json/releases>:
+But you can also use the precompiled binary for your operating system from the releases tab in github: <https://github.com/AndrewRadev/id3-json/releases>:
 
 - Linux: [binary](https://github.com/AndrewRadev/id3-json/releases/download/v0.1.2/id3-json_v0.1.2_x86_64-unknown-linux-musl.zip), [sha256 checksum](https://github.com/AndrewRadev/id3-json/releases/download/v0.1.2/id3-json_v0.1.2_x86_64-apple-darwin.zip.sha256sum)
 - Windows: [binary](https://github.com/AndrewRadev/id3-json/releases/download/v0.1.2/id3-json_v0.1.2_x86_64-pc-windows-gnu.zip), [sha256 checksum](https://github.com/AndrewRadev/id3-json/releases/download/v0.1.2/id3-json_v0.1.2_x86_64-pc-windows-gnu.zip.sha256sum)
