@@ -120,15 +120,15 @@ fn extract_string(label: &str, json_value: &serde_json::Value) -> anyhow::Result
 }
 
 fn extract_u32(label: &str, json_value: &serde_json::Value) -> anyhow::Result<Option<u32>> {
-    let invalid_number = anyhow!("Invalid numeric value for \"{}\": {:?}", label, json_value);
+    let invalid_number = || anyhow!("Invalid numeric value for \"{}\": {:?}", label, json_value);
 
     match json_value {
         serde_json::Value::Null => Ok(None),
         serde_json::Value::Number(number) => {
-            let value = number.as_u64().ok_or_else(|| invalid_number)?.try_into()?;
+            let value = number.as_u64().ok_or_else(invalid_number)?.try_into()?;
             Ok(Some(value))
         },
-        _ => Err(anyhow!("Invalid numeric value for \"{}\": {:?}", label, json_value)),
+        _ => Err(invalid_number()),
     }
 }
 
