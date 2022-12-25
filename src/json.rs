@@ -124,6 +124,7 @@ fn extract_u32(label: &str, json_value: &serde_json::Value) -> anyhow::Result<Op
 
     match json_value {
         serde_json::Value::Null => Ok(None),
+        serde_json::Value::String(value) => Ok(Some(value.parse()?)),
         serde_json::Value::Number(number) => {
             let value = number.as_u64().ok_or_else(invalid_number)?.try_into()?;
             Ok(Some(value))
@@ -166,6 +167,10 @@ mod tests {
         let json = serde_json::json!(None::<u64>);
         let value = extract_u32("_", &json).unwrap();
         assert_eq!(value, None);
+
+        let json = serde_json::json!({ "key": "13" });
+        let value = extract_u32("key", &json.get("key").unwrap()).unwrap();
+        assert_eq!(value, Some(13));
 
         let json = serde_json::json!({ "key": "String!" });
         assert!(extract_u32("key", &json.get("key").unwrap()).is_err());
