@@ -83,6 +83,8 @@ Here's how we can update the title and track number, and remove the genre. The t
 
 The numbers given to the "year" field in [`set_year`](https://docs.rs/id3/1.5.1/id3/trait.TagLike.html#method.set_year) seem to be `i32`, but for simplicity, I assume years are going to be positive numbers.
 
+When reading tags, the plugin will try to return "year" from the TYER tag, but if there is none, it'll look for the year in the "date released" (TDRL), "original date released" (TDOR) and "date recorded" (TRDC)  tags, in that order. When writing, it'll still write in "TYER".
+
 It's possible to have multiple comments with a "description", "lang", and "text". See the [`frame::Comment`](https://docs.rs/id3/1.5.1/id3/frame/struct.Comment.html) structure for details. However, at least in my personal music library, it seems almost all mp3 files contain a single comment with `""` for the description. Some of them have another one that's labeled as `"ID3v1 comment"`.
 
 For simplicity's sake I've decided to have `id3-json` read and write that one comment with a description of `""`. All other comments should be preserved, so if anything else reads them, it should still work as expected.

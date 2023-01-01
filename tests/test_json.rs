@@ -162,3 +162,59 @@ fn test_multiple_comments_2() {
     let json = read_from_tag(&tag);
     assert_eq!(json.get("data").unwrap().get("comment").unwrap(), "value2");
 }
+
+#[test]
+fn test_year_fallback() {
+    use id3::TagLike;
+
+    let song = Fixture::copy("attempt_1.mp3");
+    let mut tag = read_tag(&song);
+
+    tag.remove_year();
+    tag.set_date_released(id3::Timestamp {
+        year:   2023,
+        month:  Some(6),
+        day:    None,
+        hour:   None,
+        minute: None,
+        second: None,
+    });
+    tag.write_to_path(&*song, id3::Version::Id3v23).unwrap();
+
+    let mut tag = read_tag(&song);
+    let json = read_from_tag(&tag);
+
+    assert_eq!(json.get("data").unwrap().get("year").unwrap(), 2023);
+
+    tag.remove_date_released();
+    tag.set_original_date_released(id3::Timestamp {
+        year:   1990,
+        month:  Some(7),
+        day:    Some(28),
+        hour:   None,
+        minute: None,
+        second: None,
+    });
+    tag.write_to_path(&*song, id3::Version::Id3v23).unwrap();
+
+    let mut tag = read_tag(&song);
+    let json = read_from_tag(&tag);
+
+    assert_eq!(json.get("data").unwrap().get("year").unwrap(), 1990);
+
+    tag.remove_original_date_released();
+    tag.set_date_recorded(id3::Timestamp {
+        year:   1989,
+        month:  Some(5),
+        day:    Some(23),
+        hour:   None,
+        minute: None,
+        second: None,
+    });
+    tag.write_to_path(&*song, id3::Version::Id3v23).unwrap();
+
+    let tag = read_tag(&song);
+    let json = read_from_tag(&tag);
+
+    assert_eq!(json.get("data").unwrap().get("year").unwrap(), 1989);
+}

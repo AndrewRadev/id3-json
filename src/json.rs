@@ -6,6 +6,10 @@ pub fn read_from_tag(tag: &id3::Tag) -> serde_json::Value {
     // have one with a "description" set to an empty string. So let's have a single "comment" field
     // that reads and writes there.
     let comment = tag.comments().find(|c| c.description.is_empty()).map(|c| c.text.clone());
+    let year = tag.year().
+        or_else(|| tag.date_released().map(|d| d.year)).
+        or_else(|| tag.original_date_released().map(|d| d.year)).
+        or_else(|| tag.date_recorded().map(|d| d.year));
 
     serde_json::json!({
         "data": {
@@ -13,7 +17,7 @@ pub fn read_from_tag(tag: &id3::Tag) -> serde_json::Value {
             "artist": tag.artist(),
             "album": tag.album(),
             "track": tag.track(),
-            "year": tag.year(),
+            "year": year,
             "genre": tag.genre(),
             "comment": comment,
         },
