@@ -87,6 +87,14 @@ It's possible to have multiple comments with a "description", "lang", and "text"
 
 For simplicity's sake I've decided to have `id3-json` read and write that one comment with a description of `""`. All other comments should be preserved, so if anything else reads them, it should still work as expected.
 
+## Potential future changes
+
+For now, this interface works for me, but if other people need to use it without some of my design choices, a `--raw` or `--full` option could be implemented to just read and write the frames as-is with minimal processing and leave it to the client of the tool to decide how to manage them.
+
+Batch processing is another direction I could take this, returning a JSON array with an entry for each filename (or an object with filenames as keys?) and, when writing, expecting a corresponding array/object.
+
+A lot of other metadata could also be read/written, the specific fields I've chosen are just what I used to use from a different utility.
+
 ## Music used for testing:
 
 Elevator Music Attempt 1 by Christian Bakker: <https://www.jamendo.com/en/list/a98147/echoes-from-the-past>
