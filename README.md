@@ -99,4 +99,5 @@ A lot of other metadata could also be read/written, the specific fields I've cho
 
 ## Music used for testing:
 
-Elevator Music Attempt 1 by Christian Bakker: <https://www.jamendo.com/en/list/a98147/echoes-from-the-past>
+- Elevator Music Attempt 1 by Christian Bakker: <https://www.jamendo.com/en/list/a98147/echoes-from-the-past>
+- The Masochism Tango by Tom Lehrer: <https://tomlehrersongs.com/the-masochism-tango/>
