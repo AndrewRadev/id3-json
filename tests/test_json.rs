@@ -218,3 +218,18 @@ fn test_year_fallback() {
 
     assert_eq!(json.get("data").unwrap().get("year").unwrap(), 1989);
 }
+
+#[test]
+fn test_year_from_id3v24_tag() {
+    let song = Fixture::copy("10. the masochism tango.mp3");
+    let mut tag = read_tag(&song);
+    let json = read_from_tag(&tag);
+
+    assert_eq!(json.get("data").unwrap().get("year").unwrap(), 1959);
+
+    let new_data = json!({ "year": "2023" }).as_object().unwrap().clone();
+    write_to_tag(new_data, &mut tag).unwrap();
+    let json = read_from_tag(&tag);
+
+    assert_eq!(json.get("data").unwrap().get("year").unwrap(), 2023);
+}
