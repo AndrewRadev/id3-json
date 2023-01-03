@@ -29,7 +29,9 @@ fn run() -> anyhow::Result<()> {
         let input = serde_json::from_reader(std::io::stdin())?;
 
         json::write_to_tag(input, &mut tag)?;
-        tag.write_to_path(&args.filename, tag.version())?;
+
+        let tag_version = args.tag_version.unwrap_or_else(|| tag.version());
+        tag.write_to_path(&args.filename, tag_version)?;
     }
 
     if args.read {
