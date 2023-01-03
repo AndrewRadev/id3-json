@@ -6,22 +6,34 @@ pub fn read_from_tag(tag: &id3::Tag) -> serde_json::Value {
     // have one with a "description" set to an empty string. So let's have a single "comment" field
     // that reads and writes there.
     let comment = tag.comments().find(|c| c.description.is_empty()).map(|c| c.text.clone());
-    let year = tag.year().
-        or_else(|| tag.date_released().map(|d| d.year)).
-        or_else(|| tag.original_date_released().map(|d| d.year)).
-        or_else(|| tag.date_recorded().map(|d| d.year));
 
-    serde_json::json!({
-        "data": {
-            "title": tag.title(),
-            "artist": tag.artist(),
-            "album": tag.album(),
-            "track": tag.track(),
-            "year": year,
-            "genre": tag.genre(),
-            "comment": comment,
-        },
-    })
+    if tag.version() == id3::Version::Id3v24 {
+        serde_json::json!({
+            "version": format!("{}", tag.version()),
+            "data": {
+                "title": tag.title(),
+                "artist": tag.artist(),
+                "album": tag.album(),
+                "track": tag.track(),
+                "date": tag.date_released().map(|ts| format!("{}", ts)),
+                "genre": tag.genre(),
+                "comment": comment,
+            },
+        })
+    } else {
+        serde_json::json!({
+            "version": format!("{}", tag.version()),
+            "data": {
+                "title": tag.title(),
+                "artist": tag.artist(),
+                "album": tag.album(),
+                "track": tag.track(),
+                "year": tag.year(),
+                "genre": tag.genre(),
+                "comment": comment,
+            },
+        })
+    }
 }
 
 pub fn write_to_tag(
@@ -58,11 +70,18 @@ pub fn write_to_tag(
                     tag.remove_track();
                 }
             },
-            "year" => {
+            "year" if !matches!(tag.version(), id3::Version::Id3v24) => {
                 if let Some(year) = extract_u32("year", &value)? {
                     tag.set_year(year.try_into()?);
                 } else {
                     tag.remove_year();
+                }
+            },
+            "date" if matches!(tag.version(), id3::Version::Id3v24) => {
+                if let Some(date) = extract_string("date", &value)? {
+                    tag.set_date_released(date.parse()?);
+                } else {
+                    tag.remove_date_released();
                 }
             },
             "genre" => {

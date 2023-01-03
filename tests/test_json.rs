@@ -45,7 +45,7 @@ fn test_full_write_to_tag() {
         "artist": "ID3-JSON",
         "album": "Songs of data processing",
         "track": 1337,
-        "year": 2022,
+        "date": "2022-12-12",
         "genre": "Electronic",
         "comment": "No comment",
     }).as_object().unwrap().clone();
@@ -57,7 +57,7 @@ fn test_full_write_to_tag() {
     assert_eq!(json.get("data").unwrap().get("artist").unwrap(), "ID3-JSON");
     assert_eq!(json.get("data").unwrap().get("album").unwrap(), "Songs of data processing");
     assert_eq!(json.get("data").unwrap().get("track").unwrap(), 1337);
-    assert_eq!(json.get("data").unwrap().get("year").unwrap(), 2022);
+    assert_eq!(json.get("data").unwrap().get("date").unwrap(), "2022-12-12");
     assert_eq!(json.get("data").unwrap().get("genre").unwrap(), "Electronic");
     assert_eq!(json.get("data").unwrap().get("comment").unwrap(), "No comment");
 }
@@ -164,13 +164,12 @@ fn test_multiple_comments_2() {
 }
 
 #[test]
-fn test_year_fallback() {
+fn test_date_from_id3v24_tag() {
     use id3::TagLike;
 
     let song = Fixture::copy("attempt_1.mp3");
     let mut tag = read_tag(&song);
 
-    tag.remove_year();
     tag.set_date_released(id3::Timestamp {
         year:   2023,
         month:  Some(6),
@@ -179,57 +178,35 @@ fn test_year_fallback() {
         minute: None,
         second: None,
     });
-    tag.write_to_path(&*song, id3::Version::Id3v23).unwrap();
-
-    let mut tag = read_tag(&song);
-    let json = read_from_tag(&tag);
-
-    assert_eq!(json.get("data").unwrap().get("year").unwrap(), 2023);
-
-    tag.remove_date_released();
-    tag.set_original_date_released(id3::Timestamp {
-        year:   1990,
-        month:  Some(7),
-        day:    Some(28),
-        hour:   None,
-        minute: None,
-        second: None,
-    });
-    tag.write_to_path(&*song, id3::Version::Id3v23).unwrap();
-
-    let mut tag = read_tag(&song);
-    let json = read_from_tag(&tag);
-
-    assert_eq!(json.get("data").unwrap().get("year").unwrap(), 1990);
-
-    tag.remove_original_date_released();
-    tag.set_date_recorded(id3::Timestamp {
-        year:   1989,
-        month:  Some(5),
-        day:    Some(23),
-        hour:   None,
-        minute: None,
-        second: None,
-    });
-    tag.write_to_path(&*song, id3::Version::Id3v23).unwrap();
+    tag.write_to_path(&*song, id3::Version::Id3v24).unwrap();
 
     let tag = read_tag(&song);
     let json = read_from_tag(&tag);
 
-    assert_eq!(json.get("data").unwrap().get("year").unwrap(), 1989);
+    assert_eq!(json.get("data").unwrap().get("date").unwrap(), "2023-06");
+    assert_eq!(json.get("data").unwrap().get("year"), None);
 }
 
 #[test]
-fn test_year_from_id3v24_tag() {
+fn test_year_from_id3v23_tag() {
     let song = Fixture::copy("10. the masochism tango.mp3");
+    let tag = read_tag(&song);
+    tag.write_to_path(&*song, id3::Version::Id3v23).unwrap();
+
     let mut tag = read_tag(&song);
     let json = read_from_tag(&tag);
 
-    assert_eq!(json.get("data").unwrap().get("year").unwrap(), 1959);
+    // Reading and writing the year works:
+    assert_eq!(json.get("data").unwrap().get("year").unwrap(), &serde_json::Value::Null);
 
     let new_data = json!({ "year": "2023" }).as_object().unwrap().clone();
     write_to_tag(new_data, &mut tag).unwrap();
     let json = read_from_tag(&tag);
-
     assert_eq!(json.get("data").unwrap().get("year").unwrap(), 2023);
+
+    // Writing a date doesn't work:
+    let new_data = json!({ "date": "2023-06-01" }).as_object().unwrap().clone();
+    write_to_tag(new_data, &mut tag).unwrap();
+    let json = read_from_tag(&tag);
+    assert_eq!(json.get("data").unwrap().get("date"), None);
 }
