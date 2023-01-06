@@ -39,7 +39,10 @@ pub fn read_from_tag(tag: &id3::Tag) -> serde_json::Value {
 pub fn write_to_tag(
     json_map: serde_json::Map<String, serde_json::Value>,
     tag: &mut id3::Tag,
+    version: Option<id3::Version>,
 ) -> anyhow::Result<()> {
+    let version = version.unwrap_or_else(|| tag.version());
+
     for (key, value) in json_map {
         match key.as_str() {
             "title" => {

@@ -27,7 +27,7 @@ fn test_partial_write_to_tag() {
         "comment": "New comment",
     }).as_object().unwrap().clone();
 
-    write_to_tag(new_data, &mut tag).unwrap();
+    write_to_tag(new_data, &mut tag, None).unwrap();
     let json = read_from_tag(&tag);
 
     assert_eq!(json.get("data").unwrap().get("title").unwrap(), "New title");
@@ -50,7 +50,7 @@ fn test_full_write_to_tag() {
         "comment": "No comment",
     }).as_object().unwrap().clone();
 
-    write_to_tag(new_data, &mut tag).unwrap();
+    write_to_tag(new_data, &mut tag, None).unwrap();
     let json = read_from_tag(&tag);
 
     assert_eq!(json.get("data").unwrap().get("title").unwrap(), "New title");
@@ -72,7 +72,7 @@ fn test_tag_removal() {
         "comment": None::<String>,
     }).as_object().unwrap().clone();
 
-    write_to_tag(new_data, &mut tag).unwrap();
+    write_to_tag(new_data, &mut tag, None).unwrap();
     let json = read_from_tag(&tag);
 
     assert_eq!(json.get("data").unwrap().get("title").unwrap(), &serde_json::Value::Null);
@@ -118,7 +118,7 @@ fn test_multiple_comments_1() {
     // Update "" comment:
     let new_data = json!({ "comment": "updated value2" }).as_object().unwrap().clone();
 
-    write_to_tag(new_data, &mut tag).unwrap();
+    write_to_tag(new_data, &mut tag, None).unwrap();
     assert_eq!(tag.comments().count(), 2);
 
     let json = read_from_tag(&tag);
@@ -127,7 +127,7 @@ fn test_multiple_comments_1() {
     // Remove "" comment, check that the other is still there:
     let new_data = json!({ "comment": None::<String> }).as_object().unwrap().clone();
 
-    write_to_tag(new_data, &mut tag).unwrap();
+    write_to_tag(new_data, &mut tag, None).unwrap();
     assert_eq!(tag.comments().count(), 1);
 
     let json = read_from_tag(&tag);
@@ -156,7 +156,7 @@ fn test_multiple_comments_2() {
     // Add new "" comment:
     let new_data = json!({ "comment": "value2" }).as_object().unwrap().clone();
 
-    write_to_tag(new_data, &mut tag).unwrap();
+    write_to_tag(new_data, &mut tag, None).unwrap();
     assert_eq!(tag.comments().count(), 2);
 
     let json = read_from_tag(&tag);
@@ -200,13 +200,13 @@ fn test_year_from_id3v23_tag() {
     assert_eq!(json.get("data").unwrap().get("year").unwrap(), &serde_json::Value::Null);
 
     let new_data = json!({ "year": "2023" }).as_object().unwrap().clone();
-    write_to_tag(new_data, &mut tag).unwrap();
+    write_to_tag(new_data, &mut tag, None).unwrap();
     let json = read_from_tag(&tag);
     assert_eq!(json.get("data").unwrap().get("year").unwrap(), 2023);
 
     // Writing a date doesn't work:
     let new_data = json!({ "date": "2023-06-01" }).as_object().unwrap().clone();
-    write_to_tag(new_data, &mut tag).unwrap();
+    write_to_tag(new_data, &mut tag, None).unwrap();
     let json = read_from_tag(&tag);
     assert_eq!(json.get("data").unwrap().get("date"), None);
 }
