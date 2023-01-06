@@ -15,7 +15,7 @@ pub fn read_from_tag(tag: &id3::Tag) -> serde_json::Value {
                 "artist": tag.artist(),
                 "album": tag.album(),
                 "track": tag.track(),
-                "date": tag.date_released().map(|ts| format!("{}", ts)),
+                "date": tag.date_recorded().map(|ts| format!("{}", ts)),
                 "genre": tag.genre(),
                 "comment": comment,
             },
@@ -70,18 +70,18 @@ pub fn write_to_tag(
                     tag.remove_track();
                 }
             },
-            "year" if !matches!(tag.version(), id3::Version::Id3v24) => {
+            "year" if version < id3::Version::Id3v24 => {
                 if let Some(year) = extract_u32("year", &value)? {
                     tag.set_year(year.try_into()?);
                 } else {
                     tag.remove_year();
                 }
             },
-            "date" if matches!(tag.version(), id3::Version::Id3v24) => {
+            "date" if version >= id3::Version::Id3v24 => {
                 if let Some(date) = extract_string("date", &value)? {
-                    tag.set_date_released(date.parse()?);
+                    tag.set_date_recorded(date.parse()?);
                 } else {
-                    tag.remove_date_released();
+                    tag.remove_date_recorded();
                 }
             },
             "genre" => {

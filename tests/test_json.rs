@@ -170,7 +170,7 @@ fn test_date_from_id3v24_tag() {
     let song = Fixture::copy("attempt_1.mp3");
     let mut tag = read_tag(&song);
 
-    tag.set_date_released(id3::Timestamp {
+    tag.set_date_recorded(id3::Timestamp {
         year:   2023,
         month:  Some(6),
         day:    None,
