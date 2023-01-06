@@ -122,7 +122,7 @@ pub fn write_to_tag(
 
                         comment_frames.push(new_frame);
                     }
-                    (None, None) => return Ok(()),
+                    (None, None) => continue,
                 }
 
                 for frame in comment_frames {
