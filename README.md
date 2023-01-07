@@ -18,9 +18,9 @@ $ cargo install id3-json
 
 But you can also use the precompiled binary for your operating system from the releases tab in github: <https://github.com/AndrewRadev/id3-json/releases>:
 
-- Linux: [binary](https://github.com/AndrewRadev/id3-json/releases/download/v0.2.0/id3-json_v0.2.0_x86_64-unknown-linux-musl.zip), [sha256 checksum](https://github.com/AndrewRadev/id3-json/releases/download/v0.2.0/id3-json_v0.2.0_x86_64-apple-darwin.zip.sha256sum)
+- Linux: [binary](https://github.com/AndrewRadev/id3-json/releases/download/v0.2.0/id3-json_v0.2.0_x86_64-unknown-linux-musl.zip), [sha256 checksum](https://github.com/AndrewRadev/id3-json/releases/download/v0.2.0/id3-json_v0.2.0_x86_64-unknown-linux-musl.zip.sha256sum)
 - Windows: [binary](https://github.com/AndrewRadev/id3-json/releases/download/v0.2.0/id3-json_v0.2.0_x86_64-pc-windows-gnu.zip), [sha256 checksum](https://github.com/AndrewRadev/id3-json/releases/download/v0.2.0/id3-json_v0.2.0_x86_64-pc-windows-gnu.zip.sha256sum)
-- Mac: [binary](https://github.com/AndrewRadev/id3-json/releases/download/v0.2.0/id3-json_v0.2.0_x86_64-apple-darwin.zip), [sha256 checksum](https://github.com/AndrewRadev/id3-json/releases/download/v0.2.0/id3-json_v0.2.0_x86_64-unknown-linux-musl.zip.sha256sum)
+- Mac: [binary](https://github.com/AndrewRadev/id3-json/releases/download/v0.2.0/id3-json_v0.2.0_x86_64-apple-darwin.zip), [sha256 checksum](https://github.com/AndrewRadev/id3-json/releases/download/v0.2.0/id3-json_v0.2.0_x86_64-apple-darwin.zip.sha256sum)
 
 ## Basic usage
 
