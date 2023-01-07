@@ -137,6 +137,21 @@ fn test_multiple_comments_1() {
 }
 
 #[test]
+fn test_nul_byte_at_the_end_of_comment() {
+    let song = Fixture::copy("attempt_1.mp3");
+    let mut tag = read_tag(&song);
+
+    let new_data = json!({
+        "comment": "New comment\u{0000}",
+    }).as_object().unwrap().clone();
+
+    write_to_tag(new_data, &mut tag, None).unwrap();
+    let json = read_from_tag(&tag);
+
+    assert_eq!(json.get("data").unwrap().get("comment").unwrap(), "New comment");
+}
+
+#[test]
 fn test_multiple_comments_2() {
     use id3::frame::{Content, Comment};
     use id3::Frame;

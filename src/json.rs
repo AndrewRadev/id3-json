@@ -5,18 +5,20 @@ pub fn read_from_tag(tag: &id3::Tag) -> serde_json::Value {
     // There could be many comments, but in my music library, it seems like it's common to just
     // have one with a "description" set to an empty string. So let's have a single "comment" field
     // that reads and writes there.
-    let comment = tag.comments().find(|c| c.description.is_empty()).map(|c| c.text.clone());
+    let comment = tag.comments().
+        find(|c| c.description.is_empty()).
+        map(|c| remove_nul_byte(&c.text).to_string());
 
     if tag.version() == id3::Version::Id3v24 {
         serde_json::json!({
             "version": format!("{}", tag.version()),
             "data": {
-                "title": tag.title(),
-                "artist": tag.artist(),
-                "album": tag.album(),
+                "title": tag.title().map(remove_nul_byte),
+                "artist": tag.artist().map(remove_nul_byte),
+                "album": tag.album().map(remove_nul_byte),
                 "track": tag.track(),
                 "date": tag.date_recorded().map(|ts| format!("{}", ts)),
-                "genre": tag.genre(),
+                "genre": tag.genre().map(remove_nul_byte),
                 "comment": comment,
             },
         })
@@ -24,12 +26,12 @@ pub fn read_from_tag(tag: &id3::Tag) -> serde_json::Value {
         serde_json::json!({
             "version": format!("{}", tag.version()),
             "data": {
-                "title": tag.title(),
-                "artist": tag.artist(),
-                "album": tag.album(),
+                "title": tag.title().map(remove_nul_byte),
+                "artist": tag.artist().map(remove_nul_byte),
+                "album": tag.album().map(remove_nul_byte),
                 "track": tag.track(),
                 "year": tag.year(),
-                "genre": tag.genre(),
+                "genre": tag.genre().map(remove_nul_byte),
                 "comment": comment,
             },
         })
@@ -157,6 +159,10 @@ fn extract_u32(label: &str, json_value: &serde_json::Value) -> anyhow::Result<Op
         },
         _ => Err(invalid_number()),
     }
+}
+
+fn remove_nul_byte(input: &str) -> &str {
+    input.trim_end_matches("\u{0000}")
 }
 
 #[cfg(test)]
