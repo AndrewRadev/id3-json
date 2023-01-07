@@ -18,16 +18,16 @@ $ cargo install id3-json
 
 But you can also use the precompiled binary for your operating system from the releases tab in github: <https://github.com/AndrewRadev/id3-json/releases>:
 
-- Linux: [binary](https://github.com/AndrewRadev/id3-json/releases/download/v0.1.2/id3-json_v0.1.2_x86_64-unknown-linux-musl.zip), [sha256 checksum](https://github.com/AndrewRadev/id3-json/releases/download/v0.1.2/id3-json_v0.1.2_x86_64-apple-darwin.zip.sha256sum)
-- Windows: [binary](https://github.com/AndrewRadev/id3-json/releases/download/v0.1.2/id3-json_v0.1.2_x86_64-pc-windows-gnu.zip), [sha256 checksum](https://github.com/AndrewRadev/id3-json/releases/download/v0.1.2/id3-json_v0.1.2_x86_64-pc-windows-gnu.zip.sha256sum)
-- Mac: [binary](https://github.com/AndrewRadev/id3-json/releases/download/v0.1.2/id3-json_v0.1.2_x86_64-apple-darwin.zip), [sha256 checksum](https://github.com/AndrewRadev/id3-json/releases/download/v0.1.2/id3-json_v0.1.2_x86_64-unknown-linux-musl.zip.sha256sum)
+- Linux: [binary](https://github.com/AndrewRadev/id3-json/releases/download/v0.2.0/id3-json_v0.2.0_x86_64-unknown-linux-musl.zip), [sha256 checksum](https://github.com/AndrewRadev/id3-json/releases/download/v0.2.0/id3-json_v0.2.0_x86_64-apple-darwin.zip.sha256sum)
+- Windows: [binary](https://github.com/AndrewRadev/id3-json/releases/download/v0.2.0/id3-json_v0.2.0_x86_64-pc-windows-gnu.zip), [sha256 checksum](https://github.com/AndrewRadev/id3-json/releases/download/v0.2.0/id3-json_v0.2.0_x86_64-pc-windows-gnu.zip.sha256sum)
+- Mac: [binary](https://github.com/AndrewRadev/id3-json/releases/download/v0.2.0/id3-json_v0.2.0_x86_64-apple-darwin.zip), [sha256 checksum](https://github.com/AndrewRadev/id3-json/releases/download/v0.2.0/id3-json_v0.2.0_x86_64-unknown-linux-musl.zip.sha256sum)
 
 ## Basic usage
 
 Running the program with `--help` should provide a message along these lines.
 
 ```
-id3-json 0.1.2
+id3-json 0.2.0
 
 USAGE:
     id3-json [FLAGS] <music-file.mp3>
@@ -38,6 +38,9 @@ FLAGS:
 
     -w, --write      Write mode, expects a JSON on STDIN with valid tag values.
                      If also given `read`, will print the resulting tags afterwards
+
+        --tag-version <ID3v2.{2,3,4}>
+                     On write, sets the tags' version to 2.2, 2.3, or 2.4.
 
     -V, --version    Prints version information
 
@@ -54,11 +57,12 @@ The input to write to a tag should be a valid json with "title", "artist", etc a
     "album": "Echoes From The Past",
     "artist": "Christiaan Bakker",
     "comment": "http://www.jamendo.com Attribution 3.0 ",
+    "date": null,
     "genre": "(255)",
     "title": "Elevator Music Attempt #1",
-    "track": null,
-    "year": null
-  }
+    "track": null
+  },
+  "version": "ID3v2.4"
 }
 ```
 
@@ -71,11 +75,12 @@ Here's how we can update the title and track number, and remove the genre. The t
     "album": "Echoes From The Past",
     "artist": "Christiaan Bakker",
     "comment": "http://www.jamendo.com Attribution 3.0 ",
+    "date": null,
     "genre": null,
     "title": "[updated]",
-    "track": 1,
-    "year": null
-  }
+    "track": 1
+  },
+  "version": "ID3v2.4"
 }
 ```
 
