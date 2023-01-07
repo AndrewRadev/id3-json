@@ -186,12 +186,9 @@ fn test_date_from_id3v24_tag() {
     let mut tag = read_tag(&song);
 
     tag.set_date_recorded(id3::Timestamp {
-        year:   2023,
-        month:  Some(6),
-        day:    None,
-        hour:   None,
-        minute: None,
-        second: None,
+        year:  2023,
+        month: Some(6),
+        ..id3::Timestamp::default()
     });
     tag.write_to_path(&*song, id3::Version::Id3v24).unwrap();
 

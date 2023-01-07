@@ -62,9 +62,9 @@ dependencies = [
 
 [[package]]
 name = "id3"
-version = "1.5.1"
+version = "1.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e46cd976185412abbe751da4d9e092223b078196751f73f947fe2cddd1255859"
+checksum = "19d7a833474b30425eb64132d1f9b727b4e39537418bcc3288497c8d2f5c8948"
 dependencies = [
  "bitflags",
  "byteorder",
@@ -144,9 +144,9 @@ checksum = "7b4b9743ed687d4b4bcedf9ff5eaa7398495ae14e61cba0a295704edbc7decde"
 
 [[package]]
 name = "serde"
-version = "1.0.151"
+version = "1.0.152"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "97fed41fc1a24994d044e6db6935e69511a1153b52c15eb42493b26fa87feba0"
+checksum = "bb7d1f0d3021d347a83e556fc4683dea2ea09d87bccdf88ff5c12545d89d5efb"
 
 [[package]]
 name = "serde_json"
