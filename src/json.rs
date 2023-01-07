@@ -162,7 +162,7 @@ fn extract_u32(label: &str, json_value: &serde_json::Value) -> anyhow::Result<Op
 }
 
 fn remove_nul_byte(input: &str) -> &str {
-    input.trim_end_matches("\u{0000}")
+    input.trim_end_matches('\u{0000}')
 }
 
 #[cfg(test)]
