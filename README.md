@@ -18,7 +18,7 @@ $ cargo install id3-json
 
 But you can also use the precompiled binary for your operating system from the releases tab in github: <https://github.com/AndrewRadev/id3-json/releases>:
 
-- Linux: [binary](https://github.com/AndrewRadev/id3-json/releases/download/v0.2.1/id3-json-v0.2.1-aarch64-apple-darwin.tar.xz)
+- Linux: [binary](https://github.com/AndrewRadev/id3-json/releases/download/v0.2.1/id3-json-v0.2.1-x86_64-unknown-linux-gnu.tar.xz)
 - Windows: [binary](https://github.com/AndrewRadev/id3-json/releases/download/v0.2.1/id3-json-v0.2.1-x86_64-pc-windows-msvc.zip)
 - Mac (x86): [binary](https://github.com/AndrewRadev/id3-json/releases/download/v0.2.1/id3-json-v0.2.1-x86_64-apple-darwin.tar.xz)
 - Mac (ARM): [binary](https://github.com/AndrewRadev/id3-json/releases/download/v0.2.1/id3-json-v0.2.1-aarch64-apple-darwin.tar.xz)
