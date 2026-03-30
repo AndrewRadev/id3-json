@@ -1,4 +1,5 @@
 use std::process::ExitCode;
+use std::fs::File;
 
 use id3_json::input;
 use id3_json::json;
@@ -26,7 +27,12 @@ fn run() -> anyhow::Result<()> {
     };
 
     if args.write {
-        let input = serde_json::from_reader(std::io::stdin())?;
+        let input = if let Some(path) = args.in_json {
+            let file = File::open(path)?;
+            serde_json::from_reader(file)?
+        } else {
+            serde_json::from_reader(std::io::stdin())?
+        };
 
         json::write_to_tag(input, &mut tag, args.tag_version)?;
 
@@ -36,7 +42,13 @@ fn run() -> anyhow::Result<()> {
 
     if args.read {
         let tag_json = json::read_from_tag(&tag);
-        serde_json::to_writer(std::io::stdout(), &tag_json)?;
+
+        if let Some(path) = args.out_json {
+            let file = File::create(path)?;
+            serde_json::to_writer(file, &tag_json)?;
+        } else {
+            serde_json::to_writer(std::io::stdout(), &tag_json)?;
+        }
     }
 
     Ok(())
