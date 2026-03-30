@@ -15,13 +15,13 @@ categories    = [ "command-line-utilities", "filesystem" ]
 circle-ci = { repository = "AndrewRadev/id3-json" }
 
 [dependencies]
-anyhow     = "1.0.69"
-id3        = "1.6.0"
-lexopt     = "0.3.0"
-serde_json = "1.0.94"
+anyhow     = "1.0.102"
+id3        = "1.16.4"
+lexopt     = "0.3.2"
+serde_json = "1.0.149"
 
 [dev-dependencies]
-tempfile = "3.4.0"
+tempfile = "3.27.0"
 
 # The profile that 'cargo dist' will build with
 [profile.dist]
