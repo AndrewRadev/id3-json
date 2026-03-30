@@ -34,16 +34,24 @@ USAGE:
     id3-json [FLAGS] <music-file.mp3>
 
 FLAGS:
-    -r, --read       Reads tags from the file and outputs them to STDOUT as JSON.
+    -r, --read       Reads tags from the file and outputs them to STDOUT as JSON,
+                     or writes them to the file given by --out-json.
                      If neither `read` nor `write` are given, will read by default.
 
-    -w, --write      Write mode, expects a JSON on STDIN with valid tag values.
-                     If also given `read`, will print the resulting tags afterwards
+    -w, --write      Write mode, expects a JSON on STDIN with valid tag values,
+                     or reads the tags from the file given by --in-json.
+                     If also given `read`, will print/write the resulting tags afterwards
+
+    -i, --in-json <path/to.json>
+                     File to read tags from. If not given, uses STDIN
+
+    -o, --out-json <path/to.json>
+                     File to write tags to. If not given, uses STDOUT
 
         --tag-version <ID3v2.{2,3,4}>
                      On write, sets the tags' version to 2.2, 2.3, or 2.4.
 
-    -V, --version    Prints version information
+    -V, --version    Print version information
 
 ARGS:
     <music-file.mp3>    Music file to read tags from or write tags to
