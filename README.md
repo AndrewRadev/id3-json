@@ -57,7 +57,7 @@ ARGS:
     <music-file.mp3>    Music file to read tags from or write tags to
 ```
 
-The input to write to a tag should be a valid json with "title", "artist", etc as keys. The output will be a JSON object that has a "data" key and inside has all these fields set. Here's some example output, pretty-printed using the [jq](https://stedolan.github.io/jq/) tool:
+The input to write to a tag should be a valid json with a "data" key pointing to a nested object with "title", "artist", etc as keys. The output is a similar JSON object with a "data" key with all of these fields set. Here's some example output, pretty-printed using the [jq](https://stedolan.github.io/jq/) tool:
 
 ``` .sh-session
 % id3-json tests/fixtures/attempt_1.mp3 | jq .
@@ -78,7 +78,7 @@ The input to write to a tag should be a valid json with "title", "artist", etc a
 Here's how we can update the title and track number, and remove the genre. The tool will print the tags after the change (because of `--read`):
 
 ``` .sh-session
-% echo '{ "title": "[updated]", "track": 1, "genre": null }' | id3-json tests/fixtures/attempt_1.mp3 --write --read | jq .
+% echo '{ "data": {"title": "[updated]", "track": 1, "genre": null} }' | id3-json tests/fixtures/attempt_1.mp3 --write --read | jq .
 {
   "data": {
     "album": "Echoes From The Past",
@@ -92,6 +92,37 @@ Here's how we can update the title and track number, and remove the genre. The t
   "version": "ID3v2.4"
 }
 ```
+
+Alternatively, you can read and write tags from/to JSON files instead of standard input and output. If we put our input tags in a JSON file called `test_input.json`:
+
+```json
+{
+  "data": {
+    "title": "[updated through file]"
+  }
+}
+```
+
+We can then use the `--in-json` parameter for this input and optionally `--out-json` parameter to read the output:
+
+``` .sh-session
+% id3-json tests/fixtures/attempt_1.mp3 -w -r --in-json test_input.json --out-json test_output.json
+% jq . test_output.json
+{
+  "data": {
+    "album": "Echoes From The Past",
+    "artist": "Christiaan Bakker",
+    "comment": "http://www.jamendo.com Attribution 3.0 ",
+    "date": null,
+    "genre": "(255)",
+    "title": "[updated through file]",
+    "track": null
+  },
+  "version": "ID3v2.4"
+}
+```
+
+For compatibility reasons, you can provide the field names without nesting them inside the "data" key, but this input format is intended to mirror the output format.
 
 ## Quirks
 
