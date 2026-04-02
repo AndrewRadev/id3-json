@@ -53,49 +53,49 @@ pub fn write_to_tag(
     for (key, value) in json_map {
         match key.as_str() {
             "title" => {
-                if let Some(title) = extract_string("title", &value)? {
+                if let Some(title) = extract_string("title", value)? {
                     tag.set_title(title);
                 } else {
                     tag.remove_title();
                 }
             },
             "artist" => {
-                if let Some(artist) = extract_string("artist", &value)? {
+                if let Some(artist) = extract_string("artist", value)? {
                     tag.set_artist(artist);
                 } else {
                     tag.remove_artist();
                 }
             },
             "album" => {
-                if let Some(album) = extract_string("album", &value)? {
+                if let Some(album) = extract_string("album", value)? {
                     tag.set_album(album);
                 } else {
                     tag.remove_album();
                 }
             },
             "track" => {
-                if let Some(track) = extract_u32("track", &value)? {
+                if let Some(track) = extract_u32("track", value)? {
                     tag.set_track(track);
                 } else {
                     tag.remove_track();
                 }
             },
             "year" if version < id3::Version::Id3v24 => {
-                if let Some(year) = extract_u32("year", &value)? {
+                if let Some(year) = extract_u32("year", value)? {
                     tag.set_year(year.try_into()?);
                 } else {
                     tag.remove_year();
                 }
             },
             "date" if version >= id3::Version::Id3v24 => {
-                if let Some(date) = extract_string("date", &value)? {
+                if let Some(date) = extract_string("date", value)? {
                     tag.set_date_recorded(date.parse()?);
                 } else {
                     tag.remove_date_recorded();
                 }
             },
             "genre" => {
-                if let Some(genre) = extract_string("genre", &value)? {
+                if let Some(genre) = extract_string("genre", value)? {
                     tag.set_genre(genre);
                 } else {
                     tag.remove_genre();
@@ -105,7 +105,7 @@ pub fn write_to_tag(
                 let mut comment_frames = tag.remove("COMM");
                 let existing_index = comment_frames.iter().
                     position(|c| c.content().comment().unwrap().description.is_empty());
-                let new_comment_body = extract_string("comment", &value)?;
+                let new_comment_body = extract_string("comment", value)?;
 
                 match (existing_index, new_comment_body) {
                     (Some(index), None) => {
