@@ -18,17 +18,17 @@ $ cargo install id3-json
 
 But you can also use the precompiled binary for your operating system from the releases tab in github: <https://github.com/AndrewRadev/id3-json/releases>:
 
-- Linux: [binary](https://github.com/AndrewRadev/id3-json/releases/download/v0.2.1/id3-json-v0.2.1-x86_64-unknown-linux-gnu.tar.xz)
-- Windows: [binary](https://github.com/AndrewRadev/id3-json/releases/download/v0.2.1/id3-json-v0.2.1-x86_64-pc-windows-msvc.zip)
-- Mac (x86): [binary](https://github.com/AndrewRadev/id3-json/releases/download/v0.2.1/id3-json-v0.2.1-x86_64-apple-darwin.tar.xz)
-- Mac (ARM): [binary](https://github.com/AndrewRadev/id3-json/releases/download/v0.2.1/id3-json-v0.2.1-aarch64-apple-darwin.tar.xz)
+- Linux: [binary](https://github.com/AndrewRadev/id3-json/releases/download/v0.3.0/id3-json-v0.3.0-x86_64-unknown-linux-gnu.tar.xz)
+- Windows: [binary](https://github.com/AndrewRadev/id3-json/releases/download/v0.3.0/id3-json-v0.3.0-x86_64-pc-windows-msvc.zip)
+- Mac (x86): [binary](https://github.com/AndrewRadev/id3-json/releases/download/v0.3.0/id3-json-v0.3.0-x86_64-apple-darwin.tar.xz)
+- Mac (ARM): [binary](https://github.com/AndrewRadev/id3-json/releases/download/v0.3.0/id3-json-v0.3.0-aarch64-apple-darwin.tar.xz)
 
 ## Basic usage
 
 Running the program with `--help` should provide a message along these lines.
 
 ```
-id3-json 0.2.1
+id3-json 0.3.0
 
 USAGE:
     id3-json [FLAGS] <music-file.mp3>
@@ -126,13 +126,13 @@ For compatibility reasons, you can provide the field names without nesting them 
 
 ## Quirks
 
-The numbers given to the "year" field in [`set_year`](https://docs.rs/id3/1.5.1/id3/trait.TagLike.html#method.set_year) seem to be `i32`, but for simplicity, I assume years are going to be positive numbers.
+The numbers given to the "year" field in [`set_year`](https://docs.rs/id3/1.16.4/id3/trait.TagLike.html#method.set_year) seem to be `i32`, but for simplicity, I assume years are going to be positive numbers.
 
 If the tags are ID3v2.4, the tool will read and write the "date" field as "date recorded" (TDRL). See the relevant github issue for the conversation: <https://github.com/AndrewRadev/id3-json/issues/1>. Seems like both picard and easy tag use that field, which is why I chose it.
 
 It's still a bit up in the air, I might end up dealing with both "date recorded" and "date released" as separate fields, though I can't help but wonder how many people care and would be happy to just have "date". For a tag that's not v2.4, it'll return "year" from the TYER tag instead.
 
-It's possible to have multiple comments with a "description", "lang", and "text". See the [`frame::Comment`](https://docs.rs/id3/1.5.1/id3/frame/struct.Comment.html) structure for details. However, at least in my personal music library, it seems almost all mp3 files contain a single comment with `""` for the description. Some of them have another one that's labeled as `"ID3v1 comment"`.
+It's possible to have multiple comments with a "description", "lang", and "text". See the [`frame::Comment`](https://docs.rs/id3/1.16.4/id3/frame/struct.Comment.html) structure for details. However, at least in my personal music library, it seems almost all mp3 files contain a single comment with `""` for the description. Some of them have another one that's labeled as `"ID3v1 comment"`.
 
 For simplicity's sake I've decided to have `id3-json` read and write that one comment with a description of `""`. All other comments should be preserved, so if anything else reads them, it should still work as expected.
 
