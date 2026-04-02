@@ -1,5 +1,3 @@
-[![Build Status](https://circleci.com/gh/AndrewRadev/id3-json/tree/main.svg?style=shield)](https://circleci.com/gh/AndrewRadev/id3-json?branch=main)
-
 # ID3-JSON
 
 This project's goal is to provide an easy way to read and write ID3 tags with a consistent input and output. The existing tools I've found require a lot of work to parse their output and work in inconsistent ways, so I'm making another one.
