@@ -39,10 +39,15 @@ pub fn read_from_tag(tag: &id3::Tag) -> serde_json::Value {
 }
 
 pub fn write_to_tag(
-    json_map: serde_json::Map<String, serde_json::Value>,
+    json_map: &serde_json::Map<String, serde_json::Value>,
     tag: &mut id3::Tag,
     version: Option<id3::Version>,
 ) -> anyhow::Result<()> {
+    // Check for a nested "data" key to read fields from
+    if let Some(serde_json::Value::Object(fields_map)) = json_map.get("data") {
+        return write_to_tag(fields_map, tag, version);
+    };
+
     let version = version.unwrap_or_else(|| tag.version());
 
     for (key, value) in json_map {
