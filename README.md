@@ -122,7 +122,7 @@ We can then use the `--in-json` parameter for this input and optionally `--out-j
 }
 ```
 
-For compatibility reasons, you can provide the field names without nesting them inside the "data" key, but this input format is intended to mirror the output format.
+For compatibility reasons, you can provide the field names without nesting them inside the "data" key.
 
 ## Quirks
 
