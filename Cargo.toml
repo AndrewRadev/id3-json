@@ -2,12 +2,12 @@
 name          = "id3-json"
 version       = "0.3.0"
 edition       = "2021"
-authors       = ["Andrew Radev <andrew.radev@proton.me>"]
+authors       = ["Andrew Radev <contact@andrewra.dev>"]
 license       = "MIT"
 description   = "Read and write ID3 tags in a machine-readable way"
 readme        = "README.md"
-repository    = "https://github.com/AndrewRadev/id3-image"
-documentation = "https://docs.rs/id3-image/latest/id3_image"
+repository    = "https://github.com/AndrewRadev/id3-json"
+documentation = "https://docs.rs/id3-json/latest/id3_json"
 keywords      = [ "id3", "mp3", "json" ]
 categories    = [ "command-line-utilities", "filesystem" ]
 
