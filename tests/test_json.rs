@@ -1,4 +1,7 @@
+use std::io::Cursor;
+
 use serde_json::json;
+use base64::prelude::*;
 
 use id3_json::json::*;
 
@@ -241,4 +244,47 @@ fn test_year_from_id3v23_tag() {
     write_to_tag(&new_data, &mut tag, None).unwrap();
     let json = read_from_tag(&tag);
     assert_eq!(json.get("data").unwrap().get("date"), None);
+}
+
+#[test]
+fn test_writing_cover_images() {
+    let song       = Fixture::copy("attempt_1_no_cover.mp3");
+    let image_file = Fixture::copy("attempt_1.jpg");
+
+    let image = image::open(&*image_file).unwrap();
+    let mut encoded_image_bytes = Cursor::new(Vec::new());
+    image.write_to(&mut encoded_image_bytes, image::ImageFormat::Jpeg).unwrap();
+    let image_base64 = BASE64_STANDARD.encode(encoded_image_bytes.into_inner());
+
+    let mut tag = read_tag(&song);
+    assert_eq!(tag.pictures().count(), 0);
+
+    let new_data = json!({
+        "covers": [{
+            "type": "front",
+            "data": image_base64.clone(),
+        }],
+    }).as_object().unwrap().clone();
+
+    write_to_tag(&new_data, &mut tag, None).unwrap();
+    assert_eq!(tag.pictures().count(), 1);
+
+    // "type" defaults to "front", "mime_type" defaults to "image/jpeg"
+    let new_data = json!({
+        "covers": [{
+            "mime_type": "image/jpeg",
+            "data": image_base64,
+        }, {
+            "type": "back",
+            "data": image_base64,
+        }, {
+            "type": "other",
+            "data": image_base64,
+            "description": "Some description",
+        }],
+    }).as_object().unwrap().clone();
+
+    write_to_tag(&new_data, &mut tag, None).unwrap();
+    assert_eq!(tag.pictures().count(), 3);
+    assert_eq!(tag.pictures().nth(2).unwrap().description, "Some description");
 }

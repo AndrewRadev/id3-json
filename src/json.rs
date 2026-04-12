@@ -1,5 +1,6 @@
 use anyhow::anyhow;
 use id3::TagLike;
+use id3::frame::{Frame, Content, Picture, PictureType};
 
 pub fn read_from_tag(tag: &id3::Tag) -> serde_json::Value {
     // There could be many comments, but in my music library, it seems like it's common to just
@@ -134,6 +135,45 @@ pub fn write_to_tag(
 
                 for frame in comment_frames {
                     tag.add_frame(frame);
+                }
+            },
+            "covers" => {
+                let covers = value.as_array().
+                    ok_or_else(|| anyhow!("The `covers` key needs to be an array of entries"))?;
+
+                tag.remove("APIC");
+
+                for cover_data in covers {
+                    let cover_data = cover_data.as_object().
+                        ok_or_else(|| anyhow!("Entries in the `covers` array need to be objects"))?;
+
+                    let mime_type = cover_data.get("mime_type").
+                        and_then(serde_json::Value::as_str).
+                        map(String::from).
+                        unwrap_or_else(|| String::from("image/jpeg"));
+
+                    let picture_type = match cover_data.get("type").and_then(serde_json::Value::as_str) {
+                        Some("front") => PictureType::CoverFront,
+                        Some("back")  => PictureType::CoverBack,
+                        None          => PictureType::CoverFront,
+                        _             => PictureType::Other,
+                    };
+
+                    let data = cover_data.get("data").
+                        and_then(serde_json::Value::as_str).
+                        map(String::from).
+                        ok_or_else(|| anyhow!("Entries in the `covers` array need to have a base64-encoded `data` field"))?.
+                        into();
+
+                    let description = cover_data.get("description").
+                        and_then(serde_json::Value::as_str).
+                        map(String::from).
+                        unwrap_or_else(String::new).
+                        into();
+
+                    let picture = Picture { mime_type, picture_type, data, description };
+
+                    tag.add_frame(Frame::with_content("APIC", Content::Picture(picture)));
                 }
             },
             _ => (),
