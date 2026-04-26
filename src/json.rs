@@ -14,7 +14,7 @@ pub fn read_from_tag(tag: &id3::Tag, args: &Args) -> serde_json::Value {
         map(|c| remove_nul_byte(&c.text).to_string());
 
     let covers = tag.pictures().
-        filter(|p| is_cover(&p)).
+        filter(|p| is_cover(p)).
         map(|p| if args.with_covers {
             serde_json::json!({
                 "mime_type":   p.mime_type,
@@ -188,13 +188,12 @@ pub fn write_to_tag(
                         and_then(serde_json::Value::as_str).
                         map(String::from).
                         ok_or_else(|| anyhow!("Entries in the `covers` array need to have a base64-encoded `data` field"))?;
-                    let data = BASE64_STANDARD.decode(&data_base64)?.into();
+                    let data = BASE64_STANDARD.decode(&data_base64)?;
 
                     let description = cover_data.get("description").
                         and_then(serde_json::Value::as_str).
                         map(String::from).
-                        unwrap_or_else(String::new).
-                        into();
+                        unwrap_or_else(String::new);
 
                     let picture = Picture { mime_type, picture_type, data, description };
 
@@ -236,12 +235,10 @@ fn remove_nul_byte(input: &str) -> &str {
 }
 
 fn is_cover(picture: &Picture) -> bool {
-    match picture.picture_type {
-        PictureType::CoverFront
-            | PictureType::CoverBack
-            | PictureType::Other => true,
-        _ => false,
-    }
+    matches!(
+        picture.picture_type,
+        PictureType::CoverFront | PictureType::CoverBack | PictureType::Other
+    )
 }
 
 fn cover_type(picture: &Picture) -> &'static str {
