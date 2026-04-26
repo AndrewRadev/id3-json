@@ -26,7 +26,7 @@ But you can also use the precompiled binary for your operating system from the r
 Running the program with `--help` should provide a message along these lines.
 
 ```
-id3-json 0.3.0
+id3-json 0.3.1
 
 USAGE:
     id3-json [FLAGS] <music-file.mp3>
@@ -39,6 +39,9 @@ FLAGS:
     -w, --write      Write mode, expects a JSON on STDIN with valid tag values,
                      or reads the tags from the file given by --in-json.
                      If also given `read`, will print/write the resulting tags afterwards
+
+    --with-covers    Also output cover images as base64-encoded data.
+                     If not set, only cover metadata will be returned.
 
     -i, --in-json <path/to.json>
                      File to read tags from. If not given, uses STDIN
@@ -58,12 +61,13 @@ ARGS:
 The input to write to a tag should be a valid json with a "data" key pointing to a nested object with "title", "artist", etc as keys. The output is a similar JSON object with a "data" key with all of these fields set. Here's some example output, pretty-printed using the [jq](https://stedolan.github.io/jq/) tool:
 
 ``` .sh-session
-% id3-json tests/fixtures/attempt_1.mp3 | jq .
+% id3-json tests/fixtures/attempt_1_no_cover.mp3 | jq .
 {
   "data": {
     "album": "Echoes From The Past",
     "artist": "Christiaan Bakker",
     "comment": "http://www.jamendo.com Attribution 3.0 ",
+    "covers": [],
     "date": null,
     "genre": "(255)",
     "title": "Elevator Music Attempt #1",
@@ -76,12 +80,13 @@ The input to write to a tag should be a valid json with a "data" key pointing to
 Here's how we can update the title and track number, and remove the genre. The tool will print the tags after the change (because of `--read`):
 
 ``` .sh-session
-% echo '{ "data": {"title": "[updated]", "track": 1, "genre": null} }' | id3-json tests/fixtures/attempt_1.mp3 --write --read | jq .
+% echo '{ "data": {"title": "[updated]", "track": 1, "genre": null} }' | id3-json tests/fixtures/attempt_1_no_cover.mp3 --write --read | jq .
 {
   "data": {
     "album": "Echoes From The Past",
     "artist": "Christiaan Bakker",
     "comment": "http://www.jamendo.com Attribution 3.0 ",
+    "covers": [],
     "date": null,
     "genre": null,
     "title": "[updated]",
@@ -104,13 +109,14 @@ Alternatively, you can read and write tags from/to JSON files instead of standar
 We can then use the `--in-json` parameter for this input and optionally `--out-json` parameter to read the output:
 
 ``` .sh-session
-% id3-json tests/fixtures/attempt_1.mp3 -w -r --in-json test_input.json --out-json test_output.json
+% id3-json tests/fixtures/attempt_1_no_cover.mp3 -w -r --in-json test_input.json --out-json test_output.json
 % jq . test_output.json
 {
   "data": {
     "album": "Echoes From The Past",
     "artist": "Christiaan Bakker",
     "comment": "http://www.jamendo.com Attribution 3.0 ",
+    "covers": [],
     "date": null,
     "genre": "(255)",
     "title": "[updated through file]",
@@ -121,6 +127,76 @@ We can then use the `--in-json` parameter for this input and optionally `--out-j
 ```
 
 For compatibility reasons, you can provide the field names without nesting them inside the "data" key.
+
+## Cover images
+
+Cover image data is a bit tricky to transport, since it needs to be encoded in some way, and it can be large, which would get in the way of examining in a terminal. By default, the tool will output only metadata about images in the `covers` key:
+
+``` .sh-session
+% id3-json tests/fixtures/attempt_1.mp3 | jq .
+{
+  "data": {
+    "album": "Echoes From The Past",
+    "artist": "Christiaan Bakker",
+    "comment": "http://www.jamendo.com Attribution 3.0 ",
+    "covers": [
+      {
+        "description": "",
+        "mime_type": "image/jpeg",
+        "size": 13707,
+        "type": "front"
+      }
+    ],
+    "date": null,
+    "genre": "(255)",
+    "title": "Elevator Music Attempt #1",
+    "track": null
+  },
+  "version": "ID3v2.4"
+}
+```
+
+If the same command is called with `--with-covers`, the objects in the `covers` array will contain a `data` key with the image bytes encoded in base64. In this example, the data has been truncated for readability:
+
+```.sh-session
+% id3-json --with-covers tests/fixtures/attempt_1.mp3 | jq .
+{
+  "data": {
+    "album": "Echoes From The Past",
+    "artist": "Christiaan Bakker",
+    "comment": "http://www.jamendo.com Attribution 3.0 ",
+    "covers": [
+      {
+        "data": "/9j/4AAQSkZJRgABAQEASABIAAD/2wBD[...]",
+        "description": "",
+        "mime_type": "image/jpeg",
+        "size": 13707,
+        "type": "front",
+      }
+    ],
+    "date": null,
+    "genre": "(255)",
+    "title": "Elevator Music Attempt #1",
+    "track": null
+  },
+  "version": "ID3v2.4"
+}
+```
+
+In general, you can embed many types of images into mp3s, but at this time, the tool supports only covers and "other". When writing, this can be specified in the `type` key: "front", "back", or "other". If the key is missing, "front" will be used. The `mime_type` will default to "image/jpeg", but you can provide a different image format, e.g. "image/png". The "description" can be whatever textual description you'd like. There is no need to specify the size when writing, since it will be calculated by the data, but you always need a "data" key. That's all the minimal example requires:
+
+```sh
+# Generate JSON with the base64-encoded image data, not wrapped:
+BASE_64_DATA=$(cat attempt_1.jpg | base64 - --wrap=0)
+
+# Write the data in a JSON file:
+echo "{\"covers\": [{\"data\": \"$BASE_64_DATA\"}] }" > cover_test.json
+
+# Apply the JSON to the file:
+id3-json -w --in-json cover_test.json tests/fixtures/attempt_1_no_cover.mp3
+```
+
+After doing this, you should be able to open the song in a music player and see the chosen cover attached. If you'd like a different way to embed images on the command-line without going through base64 encoding, try my other project, [id3-image](https://github.com/AndrewRadev/id3-image).
 
 ## Quirks
 
