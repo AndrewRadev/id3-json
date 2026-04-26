@@ -24,7 +24,7 @@ fn run() -> anyhow::Result<()> {
     };
 
     if args.write {
-        let input = if let Some(path) = args.in_json {
+        let input = if let Some(ref path) = args.in_json {
             let file = File::open(path)?;
             serde_json::from_reader(file)?
         } else {
@@ -38,7 +38,7 @@ fn run() -> anyhow::Result<()> {
     }
 
     if args.read {
-        let tag_json = json::read_from_tag(&tag);
+        let tag_json = json::read_from_tag(&tag, &args);
 
         if let Some(path) = args.out_json {
             let file = File::create(path)?;

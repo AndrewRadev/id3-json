@@ -1,14 +1,37 @@
 use anyhow::anyhow;
 use id3::TagLike;
 use id3::frame::{Frame, Content, Picture, PictureType};
+use base64::prelude::*;
 
-pub fn read_from_tag(tag: &id3::Tag) -> serde_json::Value {
+use crate::input::Args;
+
+pub fn read_from_tag(tag: &id3::Tag, args: &Args) -> serde_json::Value {
     // There could be many comments, but in my music library, it seems like it's common to just
     // have one with a "description" set to an empty string. So let's have a single "comment" field
     // that reads and writes there.
     let comment = tag.comments().
         find(|c| c.description.is_empty()).
         map(|c| remove_nul_byte(&c.text).to_string());
+
+    let covers = tag.pictures().
+        filter(|p| is_cover(&p)).
+        map(|p| if args.with_covers {
+            serde_json::json!({
+                "mime_type":   p.mime_type,
+                "type":        cover_type(p),
+                "description": p.description,
+                "size":        p.data.len(),
+                "data":        BASE64_STANDARD.encode(&p.data),
+            })
+        } else {
+            serde_json::json!({
+                "mime_type":   p.mime_type,
+                "type":        cover_type(p),
+                "description": p.description,
+                "size":        p.data.len(),
+            })
+        }).
+        collect::<Vec<_>>();
 
     if tag.version() == id3::Version::Id3v24 {
         serde_json::json!({
@@ -21,6 +44,7 @@ pub fn read_from_tag(tag: &id3::Tag) -> serde_json::Value {
                 "date": tag.date_recorded().map(|ts| format!("{}", ts)),
                 "genre": tag.genre().map(remove_nul_byte),
                 "comment": comment,
+                "covers": covers,
             },
         })
     } else {
@@ -34,6 +58,7 @@ pub fn read_from_tag(tag: &id3::Tag) -> serde_json::Value {
                 "year": tag.year(),
                 "genre": tag.genre().map(remove_nul_byte),
                 "comment": comment,
+                "covers": covers,
             },
         })
     }
@@ -159,11 +184,11 @@ pub fn write_to_tag(
                         _             => PictureType::Other,
                     };
 
-                    let data = cover_data.get("data").
+                    let data_base64 = cover_data.get("data").
                         and_then(serde_json::Value::as_str).
                         map(String::from).
-                        ok_or_else(|| anyhow!("Entries in the `covers` array need to have a base64-encoded `data` field"))?.
-                        into();
+                        ok_or_else(|| anyhow!("Entries in the `covers` array need to have a base64-encoded `data` field"))?;
+                    let data = BASE64_STANDARD.decode(&data_base64)?.into();
 
                     let description = cover_data.get("description").
                         and_then(serde_json::Value::as_str).
@@ -208,6 +233,23 @@ fn extract_u32(label: &str, json_value: &serde_json::Value) -> anyhow::Result<Op
 
 fn remove_nul_byte(input: &str) -> &str {
     input.trim_end_matches('\u{0000}')
+}
+
+fn is_cover(picture: &Picture) -> bool {
+    match picture.picture_type {
+        PictureType::CoverFront
+            | PictureType::CoverBack
+            | PictureType::Other => true,
+        _ => false,
+    }
+}
+
+fn cover_type(picture: &Picture) -> &'static str {
+    match picture.picture_type {
+        PictureType::CoverFront => "front",
+        PictureType::CoverBack => "back",
+        _ => "other",
+    }
 }
 
 #[cfg(test)]

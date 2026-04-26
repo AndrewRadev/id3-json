@@ -8,6 +8,7 @@ pub struct Args {
     pub filename: PathBuf,
     pub read: bool,
     pub write: bool,
+    pub with_covers: bool,
     pub tag_version: Option<id3::Version>,
     pub in_json: Option<PathBuf>,
     pub out_json: Option<PathBuf>,
@@ -18,18 +19,23 @@ where
     I: IntoIterator + 'static,
     I::Item: Into<OsString>,
 {
+    let mut read        = false;
+    let mut write       = false;
+    let mut with_covers = false;
+
     let mut filename_input = None;
-    let mut tag_version = None;
-    let mut read = false;
-    let mut write = false;
-    let mut in_json = None;
-    let mut out_json = None;
+    let mut tag_version    = None;
+    let mut in_json        = None;
+    let mut out_json       = None;
+
     let mut parser = lexopt::Parser::from_iter(args);
 
     while let Some(arg) = parser.next()? {
         match arg {
-            Short('r') | Long("read") => read = true,
-            Short('w') | Long("write") => write = true,
+            Short('r') | Long("read")  => read        = true,
+            Short('w') | Long("write") => write       = true,
+            Long("with-covers")        => with_covers = true,
+
             Long("tag-version") => {
                 let mut input = parser.value()?;
                 input.make_ascii_lowercase();
@@ -48,6 +54,7 @@ where
             Value(val) if filename_input.is_none() => {
                 filename_input = Some(PathBuf::from(val));
             },
+
             Short('i') | Long("in-json") => {
                 let input = parser.value()?.into();
                 in_json = Some(input);
@@ -56,6 +63,7 @@ where
                 let input = parser.value()?.into();
                 out_json = Some(input);
             },
+
             Short('V') | Long("version") => {
                 println!("id3-json {}", env!("CARGO_PKG_VERSION"));
                 std::process::exit(0);
@@ -77,7 +85,7 @@ where
         read = true;
     }
 
-    Ok(Args { filename, read, write, tag_version, in_json, out_json })
+    Ok(Args { filename, read, write, with_covers, tag_version, in_json, out_json })
 }
 
 fn print_help() {
@@ -94,6 +102,9 @@ fn print_help() {
     println!("    -w, --write      Write mode, expects a JSON on STDIN with valid tag values,");
     println!("                     or reads the tags from the file given by --in-json.");
     println!("                     If also given `read`, will print/write the resulting tags afterwards");
+    println!();
+    println!("    --with-covers    Also output cover images as base64-encoded data.");
+    println!("                     If not set, only cover metadata will be returned.");
     println!();
     println!("    -i, --in-json <path/to.json>");
     println!("                     File to read tags from. If not given, uses STDIN");
