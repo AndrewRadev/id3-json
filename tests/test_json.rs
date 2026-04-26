@@ -287,14 +287,14 @@ fn test_reading_and_writing_cover_images() {
     // Reading info without --with-covers: has size
     let args = Args::default();
     let json = read_from_tag(&tag, &args);
-    let cover_data = json.get("data").unwrap().get("covers").unwrap()[0];
+    let cover_data = json.get("data").unwrap().get("covers").unwrap()[0].clone();
     assert_eq!(cover_data["size"], image_bytes.len());
     assert_eq!(cover_data.get("data"), None);
 
     // Reading info With --with-covers: returns base64-encoded bytes
     let args = Args { with_covers: true, ..Args::default() };
     let json = read_from_tag(&tag, &args);
-    let cover_data = json.get("data").unwrap().get("covers").unwrap()[0];
+    let cover_data = json.get("data").unwrap().get("covers").unwrap()[0].clone();
     assert_eq!(cover_data["data"], image_base64);
 
     // Multiple images with different metadata:
