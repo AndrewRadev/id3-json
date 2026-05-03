@@ -11,6 +11,9 @@ documentation = "https://docs.rs/id3-json/latest/id3_json"
 keywords      = [ "id3", "mp3", "json" ]
 categories    = [ "command-line-utilities", "filesystem" ]
 
+# Excluded since they come with mp3 files, too large to publish
+exclude = ["/tests"]
+
 [dependencies]
 anyhow     = "1.0.102"
 id3        = "1.16.4"
