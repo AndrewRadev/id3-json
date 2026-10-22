@@ -1,6 +1,6 @@
 use anyhow::anyhow;
 use id3::TagLike;
-use id3::frame::{Frame, Content, Picture, PictureType};
+use id3::frame::{Frame, Content, Picture, PictureType, Popularimeter};
 use base64::prelude::*;
 
 use crate::input::Args;
@@ -33,6 +33,17 @@ pub fn read_from_tag(tag: &id3::Tag, args: &Args) -> serde_json::Value {
         }).
         collect::<Vec<_>>();
 
+    let popularimeter = tag.frames().
+        flat_map(|f| f.content().popularimeter()).
+        map(|p| {
+            serde_json::json!({
+                "user":    p.user,
+                "rating":  p.rating,
+                "counter": p.counter,
+            })
+        }).
+        collect::<Vec<_>>();
+
     if tag.version() == id3::Version::Id3v24 {
         serde_json::json!({
             "version": format!("{}", tag.version()),
@@ -45,6 +56,7 @@ pub fn read_from_tag(tag: &id3::Tag, args: &Args) -> serde_json::Value {
                 "genre": tag.genre().map(remove_nul_byte),
                 "comment": comment,
                 "covers": covers,
+                "popularimeter": popularimeter,
             },
         })
     } else {
@@ -59,6 +71,7 @@ pub fn read_from_tag(tag: &id3::Tag, args: &Args) -> serde_json::Value {
                 "genre": tag.genre().map(remove_nul_byte),
                 "comment": comment,
                 "covers": covers,
+                "popularimeter": popularimeter,
             },
         })
     }
@@ -198,6 +211,36 @@ pub fn write_to_tag(
                     let picture = Picture { mime_type, picture_type, data, description };
 
                     tag.add_frame(Frame::with_content("APIC", Content::Picture(picture)));
+                }
+            },
+            "popularimeter" => {
+                let popularimeters = value.as_array().
+                    ok_or_else(|| anyhow!("The `popularimeter` key needs to be an array of entries"))?;
+
+                tag.remove("POPM");
+
+                for popm_data in popularimeters {
+                    let user = popm_data.get("user").
+                        and_then(serde_json::Value::as_str).
+                        map(String::from).
+                        ok_or_else(|| anyhow!("Invalid popularimeter `user`, not a UTF-8 string"))?;
+
+                    let rating = popm_data.get("rating").
+                        and_then(serde_json::Value::as_u64).
+                        ok_or_else(|| anyhow!("Invalid popularimeter `rating`, not a number"))?;
+
+                    if rating > 255 {
+                        return Err(anyhow!("Invalid popularimeter `rating`, greater than 255: {}", rating));
+                    }
+                    let rating = rating as u8;
+
+                    let counter = popm_data.get("counter").
+                        and_then(serde_json::Value::as_u64).
+                        ok_or_else(|| anyhow!("Invalid popularimeter `counter`, not a number"))?;
+
+                    let popularimeter = Popularimeter { user, rating, counter };
+
+                    tag.add_frame(Frame::with_content("POPM", Content::Popularimeter(popularimeter)));
                 }
             },
             _ => (),

@@ -317,3 +317,62 @@ fn test_reading_and_writing_cover_images() {
     assert_eq!(tag.pictures().count(), 3);
     assert_eq!(tag.pictures().nth(2).unwrap().description, "Some description");
 }
+
+#[test]
+fn test_reading_and_writing_popm_data() {
+    let song = Fixture::copy("attempt_1.mp3");
+    let mut tag = read_tag(&song);
+
+    let args = Args::default();
+    let json = read_from_tag(&tag, &args);
+    let popularimeter = json.get("data").unwrap().get("popularimeter").unwrap().as_array().unwrap();
+    assert_eq!(popularimeter.len(), 0);
+
+    // Add one POPM entry:
+    let new_data = json!({
+        "popularimeter": [{
+            "user": "foo@example.com",
+            "rating": 0,
+            "counter": 0,
+        }],
+    }).as_object().unwrap().clone();
+
+    write_to_tag(&new_data, &mut tag, None).unwrap();
+
+    let args = Args::default();
+    let json = read_from_tag(&tag, &args);
+    let popm_data = json.get("data").unwrap().get("popularimeter").unwrap()[0].clone();
+    assert_eq!(popm_data["user"], "foo@example.com");
+    assert_eq!(popm_data["rating"], 0);
+    assert_eq!(popm_data["counter"], 0);
+
+    // Increment counter, add one more:
+    let new_data = json!({
+        "popularimeter": [{
+            "user": "foo@example.com",
+            "rating": 0,
+            "counter": 1,
+        }, {
+            "user": "bar@example.com",
+            "rating": 255,
+            "counter": 0,
+        }],
+    }).as_object().unwrap().clone();
+
+    write_to_tag(&new_data, &mut tag, None).unwrap();
+
+    let args = Args::default();
+    let json = read_from_tag(&tag, &args);
+    let popm_data = json.get("data").unwrap().get("popularimeter").unwrap();
+
+    let popm1 = popm_data[0].clone();
+    let popm2 = popm_data[1].clone();
+
+    assert_eq!(popm1["user"], "foo@example.com");
+    assert_eq!(popm1["rating"], 0);
+    assert_eq!(popm1["counter"], 1);
+
+    assert_eq!(popm2["user"], "bar@example.com");
+    assert_eq!(popm2["rating"], 255);
+    assert_eq!(popm2["counter"], 0);
+}
