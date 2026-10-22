@@ -198,6 +198,43 @@ id3-json -w --in-json cover_test.json tests/fixtures/attempt_1_no_cover.mp3
 
 After doing this, you should be able to open the song in a music player and see the chosen cover attached. If you'd like a different way to embed images on the command-line without going through base64 encoding, try my other project, [id3-image](https://github.com/AndrewRadev/id3-image).
 
+## Popularimeter
+
+The "[popularimeter](https://id3.org/id3v2.3.0#Popularimeter)" functionality is supported by an array of objects with nested "user", "rating", and "counter" keys:
+
+- `user`: Expected to be some string identifier, the spec describes it as an email, but any string
+  will be accepted
+- `rating`: Between 0 and 255
+- `counter`: An unsigned number, supposed to be the number of plays
+
+An example of writing popularimeter data:
+
+```.sh-session
+% echo '{ "data": {"popularimeter": [{"user": "me@example.com", "rating": 255, "counter": 0}]} }' | id3-json tests/fixtures/attempt_1_no_cover.mp3 --write --read | jq .
+{
+  "data": {
+    "album": "Echoes From The Past",
+    "artist": "Christiaan Bakker",
+    "comment": "http://www.jamendo.com Attribution 3.0 ",
+    "covers": [],
+    "genre": "(255)",
+    "popularimeter": [
+      {
+        "counter": 0,
+        "rating": 255,
+        "user": "me@example.com"
+      }
+    ],
+    "title": "Elevator Music Attempt #1",
+    "track": null,
+    "year": null
+  },
+  "version": "ID3v2.3"
+}
+```
+
+This is probably not the ideal CLI to write this data. In the future, it might be better to have a dedicated command-line executable to only write these tags with a predefined user string, and increment counters with a dedicated flag.
+
 ## Quirks
 
 The numbers given to the "year" field in [`set_year`](https://docs.rs/id3/1.16.4/id3/trait.TagLike.html#method.set_year) seem to be `i32`, but for simplicity, I assume years are going to be positive numbers.
